@@ -14,5 +14,4 @@ public class Protocol {
     //Client: Transfer Complete
 
     //Client: Saved file: <file>
-    //on success print Trasnfer Complete
 }
