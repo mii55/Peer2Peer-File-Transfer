@@ -1,6 +1,3 @@
-//Accept a destination IP address
-//Accept a destination port
-//Accept a filename
 //Connect to the receiver
 //Transmit the file
 
@@ -8,18 +5,8 @@
 //java FileSender 192.168.1.102 5000 report.pdf
 import java.io.*;
 import java.net.*;
-import java.nio.file.*;
-import java.nio.file.attribute.BasicFileAttributes;
-
-
-class Protocol{
-    //TO DO: implement protocol
-    //when waiting print : Connecting...
-    //upon connection print Connected.
-    //when sending print Sending: + file name
-    //on success print Trasnfer Complete
-}
-
+//import java.nio.file.*;
+//import java.nio.file.attribute.BasicFileAttributes;
 
 public class FileSender{
     public static void main(String[] args) throws IOException{
@@ -31,10 +18,10 @@ public class FileSender{
         
         InetAddress ip = InetAddress.getByName(args[0]);
         int portNumber = Integer.parseInt(args[1]);
-        Path file = Paths.get(args[2]);
+        File file = new File (args[2]);
 
-        BasicFileAttributes attr = Files.readAttributes(file, BasicFileAttributes.class); // ? is this correct way to store a file
-
+        //BasicFileAttributes attr = Files.readAttributes(file, BasicFileAttributes.class);
+        
         try ( 
             ServerSocket serverSocket = new ServerSocket(portNumber,10,ip);
             //waits until a client starts up and requests a connection on the host and port of this server
@@ -45,13 +32,24 @@ public class FileSender{
                 new InputStreamReader(clientSocket.getInputStream()));
         ){
             String inputLine, outputLine;
+            //TO DO: implement input/output line from protocol
+            //TO DO: implement sending file through byte stream
+
+            
+            // "try-with-resources": the stream will be closed automatically
+            try (FileInputStream fos = new FileInputStream(file)) {//client should use FileOutputStream
+                int i;
+                while ((i = fos.read()) != -1){
+                    System.out.print((char)i); //PLACEHOLDER
+                }
+            } catch (IOException e) {
+                System.out.println("An error occurred: " + e.getMessage());
+            }
 
         }catch (IOException e) {
             System.out.println("Exception caught when trying to listen on port "
                 + portNumber + " or listening for a connection");
             System.out.println(e.getMessage());
         }
-
-
     }
 }
