@@ -20,38 +20,29 @@ public class FileSender{
         String fileName = file.getName();
         int fileSize = (int)file.length();
 
-        //BasicFileAttributes attr = Files.readAttributes(file, BasicFileAttributes.class);
         System.out.println("Connecting...");
         
         try (
-            ServerSocket serverSocket = new ServerSocket(portNumber,10,ip);
-            //waits until a client starts up and requests a connection on the host and port of this server
-            Socket clientSocket = serverSocket.accept();
+            Socket socket = new Socket(ip,portNumber);
             PrintWriter out =
-                new PrintWriter(clientSocket.getOutputStream(), true);
-            BufferedReader in = new BufferedReader(
-                new InputStreamReader(clientSocket.getInputStream()));
+                new PrintWriter(socket.getOutputStream(), true);
         ){
             System.out.println("Connected.");
-            String inputLine, outputLine;
-            //TO DO: implement input/output line from protocol
-            //TO DO: implement sending file through byte stream
 
             //send file name first
-            out.print(fileName);
+            out.println(fileName);
 
-            //TO DO: Send size of file in bytes
-            //out.print(fileSize);
-
+            //send size of file in bytes
+            out.println(fileSize);
             
             // "try-with-resources": the stream will be closed automatically
             try (FileInputStream fos = new FileInputStream(file)) {
                 System.out.println("Sending:\n" + fileName);
                 int i;
                 while ((i = fos.read()) != -1){
-                    System.out.print((char)i); //PLACEHOLDER/ for debugging
-                    out.print(i);
+                    out.print((char)i);
                 }
+                out.close();
 
                 System.out.println("Transfer complete.");
             } catch (IOException e) {
@@ -59,8 +50,8 @@ public class FileSender{
             }
 
         }catch (IOException e) {
-            System.out.println("Exception caught when trying to listen on port "
-                + portNumber + " or listening for a connection");
+            System.out.println("Exception caught when trying to connect to" + ip + "on port"
+                + portNumber);
             System.out.println(e.getMessage());
         }
     }
