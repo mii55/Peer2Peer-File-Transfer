@@ -17,6 +17,7 @@ public static void main(String[] args){
 		
 		while(true){
 			Socket client = socket.accept(); //Wait for connection and accept it 
+			System.out.println("Connection accepted");
 			InputStream in = client.getInputStream();  // Set up an input stream
 			ByteArrayOutputStream fileNameReader = new ByteArrayOutputStream(); // set up byte reader in preparation to read the file name
 			int i;
@@ -35,9 +36,11 @@ public static void main(String[] args){
 				outFile.write(buffer, 0, bytesRead); //write byte chunk to file
 			}
 			outFile.close(); //close outfile when done
+			System.out.println("Saved file: " +fileName);
+
 			client.close(); //close input stream and socket
 		}
-		
+	
 	}
 	catch (Exception e){
 		e.printStackTrace(); //error catcher and output stack trace
