@@ -24,24 +24,24 @@ public class FileSender{
         
         try (
             Socket socket = new Socket(ip,portNumber);
-            PrintWriter out =
-                new PrintWriter(socket.getOutputStream(), true);
+            DataOutputStream out = new DataOutputStream(socket.getOutputStream());
         ){
             System.out.println("Connected.");
 
             //send file name first
-            out.println(fileName);
+            out.writeUTF(fileName);
 
             //send size of file in bytes
-            out.println(fileSize);
+            out.writeLong(fileSize);
             
             // "try-with-resources": the stream will be closed automatically
             try (FileInputStream fos = new FileInputStream(file)) {
+                byte[] fileContent = new byte[fileSize];
+                fos.read(fileContent);
                 System.out.println("Sending:\n" + fileName);
-                int i;
-                while ((i = fos.read()) != -1){
-                    out.print((char)i);
-                }
+
+                out.write(fileContent);
+                
                 out.close();
 
                 System.out.println("Transfer complete.");
@@ -50,7 +50,7 @@ public class FileSender{
             }
 
         }catch (IOException e) {
-            System.out.println("Exception caught when trying to connect to" + ip + "on port"
+            System.out.println("Exception caught when trying to connect to " + ip + "on port "
                 + portNumber);
             System.out.println(e.getMessage());
         }
