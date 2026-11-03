@@ -25,7 +25,7 @@ public static void main(String[] args){
 				fileInfoReader.write(i);
 			} 
 			String fileName = fileInfoReader.toString("UTF-8").trim(); //convert to string filename
-			fileInfoReader.reset();
+			fileInfoReader.reset(); //clears the memory buffer
 			while((i=in.read()) != -1 && i != '\n'){ //read in bytes until newline hit
 				fileInfoReader.write(i);
 			}
@@ -36,14 +36,20 @@ public static void main(String[] args){
 		if (!dir.exists()) dir.mkdirs(); //if directory doesn't exist, create it
 			File saveFile = new File (saveDir, fileName); //set save location/file using the file name
 			FileOutputStream outFile = new FileOutputStream(saveFile); //create output handle to file
-			byte[] buffer = new byte[bufSize]; //create the byte buffer
-			int bytesRead; //variable to hold the bytes read
-			while ((bytesRead = in.read(buffer)) != -1){
-				outFile.write(buffer, 0, bytesRead); //write byte chunk to file
+			byte[] buffer = new byte[4096]; //create the byte buffer, 4K in size
+			int bytesRemaining = bufSize; // Need to know total size which we parsed earlier
+			while ((bytesRemaining >0)){
+				int bytesToRead = Math.min(buffer.length, bytesRemaining); //Use Math.min to create boundary on what's pulled in, i.e. if there's less than buffer size remaining it won't write the entire buffer.
+				int bytesRead = in.read(buffer, 0, bytesToRead);
+				if (bytesRead == -1){
+				System.err.println("ERROR: Connection dropped!!");
+				break;
+			}
+			outFile.write(buffer,0,bytesRead);
+			bytesRemaining -= bytesRead; //Decrementing remaining bytes by just proceessed bytes
 			}
 			outFile.close(); //close outfile when done
 			System.out.println("Saved file: " +fileName);
-
 			client.close(); //close input stream and socket
 		}
 	
