@@ -25,7 +25,6 @@ public static void main(String[] args){
 			Socket client = socket.accept(); //Wait for connection and accept it 
 			System.out.println("Connection accepted");
 			DataInputStream in = new DataInputStream(client.getInputStream()); // Set up an input stream
-			ByteArrayOutputStream fileInfoReader = new ByteArrayOutputStream(); // set up byte reader in preparation to read the file name & size
 			String fileName = in.readUTF(); //read in the filename
 			long fileSize = in.readLong(); //read in the file size
 			System.out.println("Receiving file: " + fileName + " (" + fileSize + " bytes)");
